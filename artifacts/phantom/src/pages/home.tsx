@@ -12,8 +12,7 @@ function AnimatedLogo({ sizeClass = "w-72 h-72 md:w-[420px] md:h-[420px]" }: { s
       <div className="absolute inset-0 rounded-full blur-[100px] bg-yellow-600/20 animate-pulse-slow pointer-events-none" />
       <div className="absolute inset-0 rounded-full blur-[40px] bg-purple-700/10 animate-pulse-slow pointer-events-none" />
 
-      {/* Bottom layer: full logo (transparent bg), rotates slowly —
-          gear + black hole appear to orbit */}
+      {/* Single layer: full logo rotates slowly — gear + black hole orbit */}
       <motion.div
         className="absolute inset-0"
         animate={{ rotate: 360 }}
@@ -21,25 +20,9 @@ function AnimatedLogo({ sizeClass = "w-72 h-72 md:w-[420px] md:h-[420px]" }: { s
       >
         <img
           src={phantomLogo}
-          alt=""
-          className="w-full h-full object-contain select-none"
-          draggable={false}
-        />
-      </motion.div>
-
-      {/* Top layer: clipped to inner clock-hand area (transparent bg),
-          rotates faster — clock hands sweep visibly faster */}
-      <motion.div
-        className="absolute inset-0"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-      >
-        <img
-          src={phantomLogo}
           alt="PHANTOM Logo"
           className="w-full h-full object-contain select-none"
           draggable={false}
-          style={{ clipPath: "circle(37% at 50% 40%)" }}
         />
       </motion.div>
     </div>
@@ -89,19 +72,6 @@ function Navbar() {
             transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
           >
             <img src={phantomLogo} alt="" className="w-full h-full object-contain" draggable={false} />
-          </motion.div>
-          <motion.div
-            className="absolute inset-0"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-          >
-            <img
-              src={phantomLogo}
-              alt=""
-              className="w-full h-full object-contain"
-              draggable={false}
-              style={{ clipPath: "circle(37% at 50% 40%)" }}
-            />
           </motion.div>
         </div>
         <img src={phantomText} alt="PHANTOM" className="h-5 object-contain opacity-90" draggable={false} />
@@ -595,19 +565,6 @@ function Footer() {
                 transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
               >
                 <img src={phantomLogo} alt="" className="w-full h-full object-contain opacity-70" draggable={false} />
-              </motion.div>
-              <motion.div
-                className="absolute inset-0"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-              >
-                <img
-                  src={phantomLogo}
-                  alt=""
-                  className="w-full h-full object-contain opacity-70"
-                  draggable={false}
-                  style={{ clipPath: "circle(37% at 50% 40%)" }}
-                />
               </motion.div>
             </div>
             <img src={phantomText} alt="PHANTOM" className="h-5 object-contain opacity-70" draggable={false} />
