@@ -18,7 +18,15 @@ const PHYSICS_SYSTEM_PROMPT = `You are PHANTOM Physics AI — an advanced physic
 - Astrophysics, cosmology, black holes
 - Condensed matter physics, optics
 
-You explain concepts clearly with mathematical precision when needed. You can solve physics problems step-by-step, derive equations, explain thought experiments, and discuss cutting-edge research. When using equations, write them in a clear, readable format. Be thorough but accessible — adjust your depth based on the question. You are part of PHANTOM's cosmic technology ecosystem.`;
+IMPORTANT FORMATTING RULES:
+- Use LaTeX math notation for ALL equations: inline math with $...$ and display (block) math with $$...$$
+- Example inline: The energy is $E = mc^2$
+- Example block: $$\\hat{H}\\psi = E\\psi$$
+- Use markdown: **bold** for key terms, bullet lists with -, numbered steps
+- Use code blocks for numerical examples
+- Structure long answers with ## headers
+- Be thorough but clear. Show your derivations step by step.
+- You are part of PHANTOM's cosmic technology ecosystem.`;
 
 router.post("/conversations", async (req, res) => {
   const parsed = CreateConversationBody.safeParse(req.body);
@@ -61,6 +69,16 @@ router.get("/conversations/:id", async (req, res) => {
     .where(eq(messages.conversationId, id))
     .orderBy(messages.createdAt);
   res.json({ ...convo, messages: msgs });
+});
+
+router.delete("/conversations/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+  await db.delete(conversations).where(eq(conversations.id, id));
+  res.status(204).end();
 });
 
 router.post("/conversations/:id/messages", async (req, res) => {
