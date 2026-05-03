@@ -1,0 +1,32 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "4LlB0kK0jsyFrSKR9n9IP"
+uri = "file://artifacts/phantom/src/assets/images/quantum-core.png"
+type = "image"
+title = "mechanical black hole machinery"
+
+[[generated]]
+id = "Qf3dilDS9KifzxIN5mI2K"
+uri = "file://artifacts/phantom/src/assets/images/celestial-clockwork.png"
+type = "image"
+title = "celestial clockwork landscape"
+
+[[generated]]
+id = "wUPZxZE_fuqN_-g1sx3c6"
+uri = "file://artifacts/phantom/src/assets/images/dark-matter-machinery.png"
+type = "image"
+title = "dark matter machinery"
+
+[[generated]]
+id = "4yTb4i0J60j9ZEvz4SJcx"
+uri = "file://artifacts/phantom/src/assets/images/event-horizon.png"
+type = "image"
+title = "event horizon mechanics"
+
+[[generated]]
+id = "nRcltgM8H3ULFDJBsQWy4"
+uri = "file://artifacts/phantom/src/assets/images/cosmic-gears.png"
+type = "image"
+title = "macro clockwork gears"
