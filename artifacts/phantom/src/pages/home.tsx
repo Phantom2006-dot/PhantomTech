@@ -66,13 +66,7 @@ function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-4 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm border-b border-white/5">
       <div className="flex items-center gap-3">
         <div className="relative w-9 h-9">
-          <motion.div
-            className="absolute inset-0"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
-          >
-            <img src={phantomLogo} alt="" className="w-full h-full object-contain" draggable={false} />
-          </motion.div>
+          <img src={phantomLogo} alt="" className="w-full h-full object-contain" draggable={false} />
         </div>
         <img src={phantomText} alt="PHANTOM" className="h-5 object-contain opacity-90" draggable={false} />
       </div>
@@ -559,13 +553,7 @@ function Footer() {
         <div className="flex flex-col items-center md:items-start gap-4">
           <div className="flex items-center gap-3">
             <div className="relative w-10 h-10">
-              <motion.div
-                className="absolute inset-0"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
-              >
-                <img src={phantomLogo} alt="" className="w-full h-full object-contain opacity-70" draggable={false} />
-              </motion.div>
+              <img src={phantomLogo} alt="" className="w-full h-full object-contain opacity-70" draggable={false} />
             </div>
             <img src={phantomText} alt="PHANTOM" className="h-5 object-contain opacity-70" draggable={false} />
           </div>
