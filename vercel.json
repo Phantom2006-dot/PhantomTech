@@ -1,0 +1,5 @@
+{
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "artifacts/phantom/dist",
+  "installCommand": "pnpm install"
+}
