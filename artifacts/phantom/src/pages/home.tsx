@@ -76,6 +76,7 @@ function Navbar() {
         <a href="#story" className="hover:text-primary transition-colors uppercase">Origin</a>
         <a href="#machinery" className="hover:text-primary transition-colors uppercase">Architecture</a>
         <a href="#nexus" className="hover:text-primary transition-colors uppercase">Nexus</a>
+        <a href="/physics-ai" className="hover:text-white transition-colors uppercase text-purple-400 border border-purple-500/30 px-3 py-1 rounded-full hover:bg-purple-600/20">Physics AI</a>
       </div>
     </nav>
   );

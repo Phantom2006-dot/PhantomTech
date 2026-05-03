@@ -14,3 +14,55 @@ import * as zod from "zod";
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * @summary Create a new conversation
+ */
+export const CreateConversationBody = zod.object({
+  title: zod.string(),
+});
+
+/**
+ * @summary List all conversations
+ */
+export const ListConversationsResponseItem = zod.object({
+  id: zod.number(),
+  title: zod.string(),
+  createdAt: zod.string(),
+});
+export const ListConversationsResponse = zod.array(
+  ListConversationsResponseItem,
+);
+
+/**
+ * @summary Get a conversation with its messages
+ */
+export const GetConversationParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const GetConversationResponse = zod.object({
+  id: zod.number(),
+  title: zod.string(),
+  createdAt: zod.string(),
+  messages: zod.array(
+    zod.object({
+      id: zod.number(),
+      conversationId: zod.number(),
+      role: zod.string(),
+      content: zod.string(),
+      createdAt: zod.string(),
+    }),
+  ),
+});
+
+/**
+ * @summary Send a message and stream the AI response
+ */
+export const SendMessageParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const SendMessageBody = zod.object({
+  content: zod.string(),
+});

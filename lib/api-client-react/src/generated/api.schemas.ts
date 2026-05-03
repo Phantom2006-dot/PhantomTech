@@ -8,3 +8,32 @@
 export interface HealthStatus {
   status: string;
 }
+
+export interface CreateConversationBody {
+  title: string;
+}
+
+export interface ConversationResponse {
+  id: number;
+  title: string;
+  createdAt: string;
+}
+
+export interface MessageResponse {
+  id: number;
+  conversationId: number;
+  role: string;
+  content: string;
+  createdAt: string;
+}
+
+export interface ConversationWithMessages {
+  id: number;
+  title: string;
+  createdAt: string;
+  messages: MessageResponse[];
+}
+
+export interface SendOpenaiMessageBody {
+  content: string;
+}
