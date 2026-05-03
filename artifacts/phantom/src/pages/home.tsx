@@ -1,4 +1,6 @@
+import React, { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { Hexagon, Plane, Wind, Sun, Sparkles, Brain, Infinity as InfinityIcon } from "lucide-react";
 import phantomLogo from "@/assets/images/phantom-logo-transparent.png";
 import phantomText from "@/assets/images/phantom-text-transparent.png";
 import quantumCore from "@/assets/images/quantum-core.png";
@@ -577,10 +579,513 @@ function Footer() {
   );
 }
 
+/* ─── Gravity Control ────────────────────────────────────────────── */
+const GRAVITY_SHAPES = Array.from({ length: 12 }, (_, i) => ({
+  id: i,
+  size: Math.random() * 60 + 20,
+  left: Math.random() * 80 + 10,
+  top: Math.random() * 80 + 10,
+  delay: Math.random() * 2,
+  duration: Math.random() * 3 + 2,
+  isCircle: Math.random() > 0.5,
+}));
+
+function GravityControl({ singularityMode }: { singularityMode: boolean }) {
+  const [gravityOn, setGravityOn] = useState(true);
+  const speedFactor = singularityMode ? 0.6 : 1;
+
+  return (
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden py-32 bg-[#020810]">
+      {singularityMode && <div className="absolute inset-0 bg-black/20 z-10 pointer-events-none" />}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {GRAVITY_SHAPES.map((shape) => (
+          <div
+            key={shape.id}
+            className={`absolute border border-[#0EA5E9]/30 bg-[#0EA5E9]/5 transition-all duration-[1500ms] ${shape.isCircle ? 'rounded-full' : 'rounded-md'}`}
+            style={{
+              width: shape.size,
+              height: shape.size,
+              left: `${shape.left}%`,
+              top: gravityOn ? `${shape.top}%` : '-20%',
+              opacity: gravityOn ? 0.6 : 0,
+              animation: gravityOn
+                ? `float-shape ${shape.duration * speedFactor}s ease-in-out ${shape.delay}s infinite`
+                : 'none',
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-[#0EA5E9]/20 flex items-center justify-center z-0">
+        <div
+          className="w-[400px] h-[400px] rounded-full border border-[#0EA5E9]/30"
+          style={{ animation: `pulse-ring ${4 * speedFactor}s ease-in-out infinite` }}
+        />
+        <div
+          className="absolute w-[200px] h-[200px] rounded-full border border-[#0EA5E9]/50"
+          style={{ animation: `pulse-ring ${3 * speedFactor}s ease-in-out 0.5s infinite` }}
+        />
+      </div>
+
+      <div className="relative z-20 max-w-4xl mx-auto px-6 text-center">
+        <div className="font-mono text-xs tracking-[0.4em] mb-6 uppercase text-[#0EA5E9]">Sector 1</div>
+        <h2 className="text-5xl md:text-7xl font-display font-bold tracking-tight text-white mb-6 uppercase drop-shadow-[0_0_15px_rgba(14,165,233,0.5)]">
+          GRAVITY CONTROL SYSTEMS
+        </h2>
+        <p className="text-[#38BDF8] text-xl max-w-2xl mx-auto tracking-widest uppercase mb-12">
+          We don't fight gravity. We command it.
+        </p>
+
+        <button
+          onClick={() => setGravityOn(!gravityOn)}
+          className="px-8 py-4 border border-[#0EA5E9] text-[#0EA5E9] font-mono text-sm tracking-widest uppercase hover:bg-[#0EA5E9]/10 transition-colors backdrop-blur-sm mb-20"
+        >
+          {gravityOn ? "Disable Gravity Field" : "Enable Gravity Field"}
+        </button>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 font-mono border-t border-[#0EA5E9]/30 pt-12">
+          <div>
+            <div className="text-3xl font-bold text-white mb-2">9.8 m/s²</div>
+            <div className="text-[#38BDF8]/60 text-xs tracking-widest">OVERRIDE</div>
+          </div>
+          <div>
+            <div className="text-3xl font-bold text-white mb-2">400km</div>
+            <div className="text-[#38BDF8]/60 text-xs tracking-widest">ZERO-G RADIUS</div>
+          </div>
+          <div>
+            <div className="text-3xl font-bold text-white mb-2">∞</div>
+            <div className="text-[#38BDF8]/60 text-xs tracking-widest">FIELD STRENGTH</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Gravity Aircraft ───────────────────────────────────────────── */
+function GravityAircraft({ singularityMode }: { singularityMode: boolean }) {
+  const speedFactor = singularityMode ? 0.6 : 1;
+
+  return (
+    <section className="relative min-h-screen py-32 bg-[#03010A] flex flex-col justify-center overflow-hidden border-t border-white/5">
+      {singularityMode && <div className="absolute inset-0 bg-black/20 z-10 pointer-events-none" />}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Aircraft — CSS animation for smooth infinite travel */}
+        <div
+          className="absolute top-1/3 w-[600px] h-[100px] flex items-center"
+          style={{ animation: `aircraft-glide ${25 * speedFactor}s linear infinite` }}
+        >
+          <div className="absolute -left-40 w-[300px] h-[40px] bg-gradient-to-r from-transparent to-[#7C3AED]/40 blur-xl rounded-full" />
+          <div className="absolute -left-20 w-[200px] h-[20px] bg-gradient-to-r from-transparent to-[#A78BFA]/60 blur-md rounded-full" />
+          <div className="relative w-[300px] h-[60px]">
+            <div className="absolute inset-0 bg-black border border-[#7C3AED] rounded-[100%_20%_20%_100%] shadow-[0_0_30px_rgba(124,58,237,0.3)] overflow-hidden">
+              <div className="absolute right-10 top-1/2 -translate-y-1/2 w-20 h-[2px] bg-[#A78BFA] opacity-50" />
+            </div>
+            <div className="absolute -bottom-2 left-20 w-32 h-4 bg-[#7C3AED]/20 blur-sm rounded-full" />
+          </div>
+        </div>
+        {/* Second aircraft at different timing */}
+        <div
+          className="absolute top-2/3 w-[400px] h-[70px] flex items-center opacity-50"
+          style={{ animation: `aircraft-glide ${18 * speedFactor}s linear ${8 * speedFactor}s infinite` }}
+        >
+          <div className="absolute -left-20 w-[150px] h-[25px] bg-gradient-to-r from-transparent to-[#7C3AED]/30 blur-lg rounded-full" />
+          <div className="relative w-[200px] h-[40px]">
+            <div className="absolute inset-0 bg-black border border-[#7C3AED]/60 rounded-[100%_20%_20%_100%] shadow-[0_0_20px_rgba(124,58,237,0.2)]" />
+          </div>
+        </div>
+      </div>
+
+      <div className="relative z-20 max-w-6xl mx-auto px-6 w-full">
+        <div className="font-mono text-xs tracking-[0.4em] mb-6 uppercase text-[#A78BFA]">Sector 2</div>
+        <h2 className="text-5xl md:text-7xl font-display font-bold tracking-tight text-white mb-6 uppercase drop-shadow-[0_0_15px_rgba(124,58,237,0.4)]">
+          GRAVITY-POWERED AIRCRAFT
+        </h2>
+        <p className="text-[#A78BFA]/80 text-xl max-w-2xl tracking-widest uppercase mb-32">
+          No engines. No fuel. Pure gravity propulsion.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-8 border border-[#7C3AED]/30 bg-[#7C3AED]/5 backdrop-blur-sm">
+            <h3 className="text-xl font-bold text-white mb-4 uppercase">ZERO FUEL CONSUMPTION</h3>
+            <p className="text-[#A78BFA]/60 font-mono text-sm leading-relaxed">Gravity is the engine. The craft falls forward infinitely, generating thrust without combustion.</p>
+          </div>
+          <div className="p-8 border border-[#7C3AED]/30 bg-[#7C3AED]/5 backdrop-blur-sm">
+            <h3 className="text-xl font-bold text-white mb-4 uppercase">TRANS-ATMOSPHERIC</h3>
+            <p className="text-[#A78BFA]/60 font-mono text-sm leading-relaxed">From surface to orbit in 4 minutes. Ignores atmospheric friction via localized spacetime displacement.</p>
+          </div>
+          <div className="p-8 border border-[#7C3AED]/30 bg-[#7C3AED]/5 backdrop-blur-sm">
+            <h3 className="text-xl font-bold text-white mb-4 uppercase">SILENT OPERATION</h3>
+            <p className="text-[#A78BFA]/60 font-mono text-sm leading-relaxed">No combustion, no sound, no limit. Moves through the atmosphere without disturbing it.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Hover Mobility ─────────────────────────────────────────────── */
+const BUILDINGS = Array.from({ length: 20 }, (_, i) => ({
+  id: i,
+  height: Math.random() * 40 + 20,
+  width: Math.random() * 4 + 2,
+  left: i * 5,
+  opacity: Math.random() * 0.3 + 0.1,
+}));
+
+function HoverMobility({ singularityMode }: { singularityMode: boolean }) {
+  const speedFactor = singularityMode ? 0.6 : 1;
+
+  return (
+    <section className="relative min-h-screen py-32 bg-[#010D10] flex items-center overflow-hidden border-t border-white/5">
+      {singularityMode && <div className="absolute inset-0 bg-black/20 z-10 pointer-events-none" />}
+      
+      {/* City Skyline — CSS transition on whileInView via motion */}
+      <div className="absolute bottom-0 left-0 right-0 h-1/2 pointer-events-none">
+        {BUILDINGS.map(b => (
+          <motion.div
+            key={b.id}
+            initial={{ scaleY: 0 }}
+            whileInView={{ scaleY: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2, delay: b.id * 0.04 }}
+            className="absolute bottom-0 bg-[#06B6D4] origin-bottom"
+            style={{ width: `${b.width}%`, left: `${b.left}%`, height: `${b.height}%`, opacity: b.opacity }}
+          />
+        ))}
+      </div>
+
+      {/* Air Highways */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[30%] w-full h-[1px] bg-gradient-to-r from-transparent via-[#06B6D4]/30 to-transparent" />
+        <div className="absolute top-[50%] w-full h-[1px] bg-gradient-to-r from-transparent via-[#22D3EE]/20 to-transparent" />
+        <div className="absolute top-[70%] w-full h-[1px] bg-gradient-to-r from-transparent via-[#06B6D4]/30 to-transparent" />
+
+        {/* Hover Cars — pure CSS travel animations */}
+        <div
+          className="absolute top-[29%] w-12 h-2 rounded-full bg-[#22D3EE] shadow-[0_0_15px_#22D3EE]"
+          style={{ animation: `travel-right ${12 * speedFactor}s linear infinite` }}
+        />
+        <div
+          className="absolute top-[49%] w-16 h-2 rounded-full bg-[#06B6D4] shadow-[0_0_15px_#06B6D4]"
+          style={{ animation: `travel-left ${18 * speedFactor}s linear infinite` }}
+        />
+        <div
+          className="absolute top-[69%] w-10 h-2 rounded-full bg-[#22D3EE] shadow-[0_0_15px_#22D3EE]"
+          style={{ animation: `travel-right ${9 * speedFactor}s linear ${4 * speedFactor}s infinite` }}
+        />
+      </div>
+
+      <div className="relative z-20 max-w-6xl mx-auto px-6 w-full">
+        <div className="bg-black/40 border border-[#06B6D4]/30 p-10 max-w-2xl backdrop-blur-md">
+          <div className="font-mono text-xs tracking-[0.4em] mb-4 uppercase text-[#22D3EE]">Sector 3</div>
+          <h2 className="text-4xl md:text-6xl font-display font-bold tracking-tight text-white mb-4 uppercase drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+            HOVER MOBILITY
+          </h2>
+          <p className="text-[#06B6D4] text-xl tracking-widest uppercase mb-10">
+            The city is no longer flat.
+          </p>
+          
+          <ul className="space-y-4 font-mono text-sm text-[#22D3EE]/80">
+            <li className="flex items-center gap-4">
+              <div className="w-2 h-2 bg-[#22D3EE] rounded-full shadow-[0_0_8px_#22D3EE]" />
+              Multi-tier Air Highways
+            </li>
+            <li className="flex items-center gap-4">
+              <div className="w-2 h-2 bg-[#22D3EE] rounded-full shadow-[0_0_8px_#22D3EE]" />
+              Zero Emissions Architecture
+            </li>
+            <li className="flex items-center gap-4">
+              <div className="w-2 h-2 bg-[#22D3EE] rounded-full shadow-[0_0_8px_#22D3EE]" />
+              Autonomous Grid Integration
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Solar Amplifier ────────────────────────────────────────────── */
+function SolarAmplifier({ singularityMode }: { singularityMode: boolean }) {
+  const speedFactor = singularityMode ? 0.6 : 1;
+
+  return (
+    <section className="relative min-h-screen flex items-center justify-center py-32 bg-[#08060A] overflow-hidden border-t border-white/5">
+      {singularityMode && <div className="absolute inset-0 bg-black/20 z-10 pointer-events-none" />}
+      
+      {/* Central Sun — pure CSS animations */}
+      <div className="absolute top-1/2 left-1/2 pointer-events-none" style={{ transform: 'none' }}>
+        {/* Glow halo */}
+        <div
+          className="absolute w-[300px] h-[300px] rounded-full bg-[radial-gradient(circle,rgba(245,158,11,0.8)_0%,rgba(245,158,11,0)_70%)] blur-2xl"
+          style={{ animation: `sun-pulse ${4 * speedFactor}s ease-in-out infinite` }}
+        />
+        {/* Sun core */}
+        <div className="absolute w-[100px] h-[100px] rounded-full bg-[#F59E0B] shadow-[0_0_50px_#F59E0B]"
+          style={{ transform: 'translate(-50%, -50%)' }} />
+        
+        {/* Panels arranged radially */}
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute origin-left"
+            style={{ transform: `rotate(${i * 45}deg) translateX(180px) translateY(-10px)` }}
+          >
+            <div className="w-[120px] h-[20px] bg-black border border-[#FCD34D] rounded-sm relative overflow-hidden">
+              <div
+                className="absolute inset-0 bg-[#F59E0B]/30"
+                style={{ animation: `panel-glow ${2 * speedFactor}s ease-in-out ${i * 0.2}s infinite` }}
+              />
+            </div>
+            <div
+              className="absolute left-0 top-1/2 -translate-y-1/2 h-[2px] w-[100px] bg-gradient-to-r from-[#FCD34D] to-transparent origin-left"
+              style={{ animation: `beam-scale ${1.5 * speedFactor}s ease-in-out ${i * 0.2}s infinite` }}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="relative z-20 max-w-6xl mx-auto px-6 text-center mt-96">
+        <div className="font-mono text-xs tracking-[0.4em] mb-4 uppercase text-[#FCD34D]">Sector 4</div>
+        <h2 className="text-5xl md:text-7xl font-display font-bold tracking-tight text-white mb-6 uppercase drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]">
+          SOLAR CELL AMPLIFIER
+        </h2>
+        <p className="text-[#F59E0B]/80 text-xl tracking-widest uppercase mb-16">
+          Energy, amplified beyond nature.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 font-mono border-t border-[#F59E0B]/30 pt-12 max-w-4xl mx-auto">
+          <div>
+            <div className="text-4xl font-bold text-white mb-2">847%</div>
+            <div className="text-[#FCD34D]/60 text-xs tracking-widest">EFFICIENCY AMP</div>
+          </div>
+          <div>
+            <div className="text-4xl font-bold text-white mb-2">99.97%</div>
+            <div className="text-[#FCD34D]/60 text-xs tracking-widest">PHOTON CAPTURE</div>
+          </div>
+          <div>
+            <div className="text-4xl font-bold text-white mb-2">4.7 TW</div>
+            <div className="text-[#FCD34D]/60 text-xs tracking-widest">OUTPUT PER UNIT</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Cosmic Ray Condenser ───────────────────────────────────────── */
+const COSMIC_RAYS = Array.from({ length: 30 }, (_, i) => ({
+  id: i,
+  angle: Math.random() * 360,
+  delay: Math.random() * 2,
+  duration: Math.random() * 1 + 0.8,
+}));
+
+const SPACE_STARS = Array.from({ length: 50 }, (_, i) => ({
+  id: i,
+  left: Math.random() * 100,
+  top: Math.random() * 100,
+}));
+
+function CosmicRayCondenser({ singularityMode }: { singularityMode: boolean }) {
+  const speedFactor = singularityMode ? 0.6 : 1;
+
+  return (
+    <section className="relative min-h-screen py-32 bg-[#000005] flex items-center overflow-hidden border-t border-white/5">
+      {singularityMode && <div className="absolute inset-0 bg-black/20 z-10 pointer-events-none" />}
+      
+      {/* Deep space stars — static, precomputed positions */}
+      <div className="absolute inset-0 pointer-events-none">
+        {SPACE_STARS.map(s => (
+          <div
+            key={s.id}
+            className="absolute w-[2px] h-[2px] bg-white rounded-full opacity-50"
+            style={{ left: `${s.left}%`, top: `${s.top}%` }}
+          />
+        ))}
+      </div>
+
+      {/* Condenser Core & Rays — pure CSS */}
+      <div className="absolute right-[20%] top-1/2 -translate-y-1/2 pointer-events-none w-[400px] h-[400px]">
+        {COSMIC_RAYS.map(ray => (
+          <div
+            key={ray.id}
+            className="absolute top-1/2 left-1/2 origin-left"
+            style={{ transform: `rotate(${ray.angle}deg)` }}
+          >
+            <div
+              className="w-[200px] h-[1px] bg-gradient-to-r from-transparent via-[#C026D3] to-[#9333EA]"
+              style={{ animation: `ray-flash ${ray.duration * speedFactor}s ease-out ${ray.delay}s infinite` }}
+            />
+          </div>
+        ))}
+        
+        {/* Core glow */}
+        <div
+          className="absolute w-[150px] h-[150px] rounded-full bg-[radial-gradient(circle,rgba(192,38,211,1)_0%,rgba(147,51,234,0.5)_50%,rgba(0,0,0,0)_100%)] blur-md shadow-[0_0_80px_rgba(192,38,211,0.6)]"
+          style={{ top: '50%', left: '50%', animation: `core-pulse ${2 * speedFactor}s ease-in-out infinite` }}
+        />
+        <div className="absolute inset-0 m-auto w-[50px] h-[50px] rounded-full bg-white shadow-[0_0_20px_#fff]" />
+      </div>
+
+      <div className="relative z-20 max-w-6xl mx-auto px-6 w-full">
+        <div className="max-w-2xl">
+          <div className="font-mono text-xs tracking-[0.4em] mb-4 uppercase text-[#C026D3]">Sector 5</div>
+          <h2 className="text-5xl md:text-7xl font-display font-bold tracking-tight text-white mb-6 uppercase drop-shadow-[0_0_15px_rgba(147,51,234,0.5)]">
+            COSMIC RAY CONDENSER
+          </h2>
+          <p className="text-[#9333EA]/80 text-xl tracking-widest uppercase mb-16">
+            We harvest power from the universe itself.
+          </p>
+
+          <div className="space-y-8 font-mono">
+            <div className="border-l-2 border-[#C026D3] pl-6 py-2">
+              <div className="text-3xl font-bold text-white mb-1">100%</div>
+              <div className="text-[#C026D3]/60 text-xs tracking-widest">RADIATION CAPTURE</div>
+            </div>
+            <div className="border-l-2 border-[#C026D3] pl-6 py-2">
+              <div className="text-3xl font-bold text-white mb-1">890 ZW</div>
+              <div className="text-[#C026D3]/60 text-xs tracking-widest">DAILY ENERGY YIELD</div>
+            </div>
+            <div className="border-l-2 border-[#C026D3] pl-6 py-2">
+              <div className="text-3xl font-bold text-white mb-1">4.2 L-Y</div>
+              <div className="text-[#C026D3]/60 text-xs tracking-widest">OPERATIONAL DEPTH</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Quantum AI ─────────────────────────────────────────────────── */
+const NODES = Array.from({ length: 20 }, (_, i) => ({
+  id: i,
+  x: Math.random() * 100,
+  y: Math.random() * 100,
+  delay: Math.random() * 2,
+  dur: Math.random() * 1 + 1.5,
+}));
+
+const EQUATIONS = [
+  { text: "∇²Ψ = 0", top: 20, left: 10, delay: 0 },
+  { text: "E=mc²", top: 70, left: 20, delay: 1 },
+  { text: "Σ∞", top: 40, left: 80, delay: 2 },
+  { text: "∂/∂t", top: 80, left: 70, delay: 3 },
+  { text: "ℏ", top: 30, left: 60, delay: 4 },
+];
+
+function QuantumAI({ singularityMode }: { singularityMode: boolean }) {
+  const [metrics, setMetrics] = useState({ cpu: 99.9, coherence: 0.999 });
+  const speedFactor = singularityMode ? 0.6 : 1;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMetrics({
+        cpu: 99 + Math.random() * 0.9,
+        coherence: 0.99 + Math.random() * 0.009,
+      });
+    }, Math.max(60, 100 * speedFactor));
+    return () => clearInterval(interval);
+  }, [speedFactor]);
+
+  return (
+    <section className="relative min-h-screen py-32 bg-[#010A08] flex items-center justify-center overflow-hidden border-t border-white/5">
+      {singularityMode && <div className="absolute inset-0 bg-black/20 z-10 pointer-events-none" />}
+      
+      {/* Neural Network SVG — static lines, no framer-motion */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20">
+        {NODES.map((node, i) => {
+          const next = NODES[(i + 1) % NODES.length];
+          return (
+            <line
+              key={i}
+              x1={`${node.x}%`} y1={`${node.y}%`}
+              x2={`${next.x}%`} y2={`${next.y}%`}
+              stroke="#10B981" strokeWidth="1" opacity={0.4}
+            />
+          );
+        })}
+      </svg>
+
+      {/* Nodes — pure CSS pulse */}
+      <div className="absolute inset-0 pointer-events-none">
+        {NODES.map(node => (
+          <div
+            key={node.id}
+            className="absolute w-2 h-2 rounded-full bg-[#34D399] shadow-[0_0_10px_#10B981]"
+            style={{
+              left: `${node.x}%`,
+              top: `${node.y}%`,
+              animation: `node-pulse ${node.dur * speedFactor}s ease-in-out ${node.delay}s infinite`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Floating Equations — pure CSS drift */}
+      {EQUATIONS.map((eq) => (
+        <div
+          key={eq.text}
+          className="absolute font-serif text-[#34D399]/40 text-4xl pointer-events-none"
+          style={{
+            top: `${eq.top}%`,
+            left: `${eq.left}%`,
+            animation: `eq-drift ${5 * speedFactor}s ease-in-out ${eq.delay}s infinite`,
+          }}
+        >
+          {eq.text}
+        </div>
+      ))}
+
+      {/* Panel */}
+      <div className="absolute top-10 right-10 border border-[#10B981]/30 bg-black/80 p-4 font-mono text-xs text-[#34D399] backdrop-blur-sm z-20 w-64">
+        <div className="border-b border-[#10B981]/30 pb-2 mb-2 flex justify-between">
+          <span>Q-PROCESSOR</span>
+          <span className="animate-pulse">ACTIVE</span>
+        </div>
+        <div className="flex justify-between mb-1">
+          <span>UTILIZATION</span>
+          <span>{metrics.cpu.toFixed(2)}%</span>
+        </div>
+        <div className="flex justify-between">
+          <span>COHERENCE</span>
+          <span>{metrics.coherence.toFixed(4)}</span>
+        </div>
+      </div>
+
+      <div className="relative z-20 max-w-6xl mx-auto px-6 w-full text-center">
+        <div className="font-mono text-xs tracking-[0.4em] mb-6 uppercase text-[#10B981]">Sector 6</div>
+        <h2 className="text-5xl md:text-7xl font-display font-bold tracking-tight text-white mb-6 uppercase drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]">
+          QUANTUM AI & PHYSICS ENGINE
+        </h2>
+        <p className="text-[#34D399]/80 text-xl max-w-2xl mx-auto tracking-widest uppercase mb-20">
+          Intelligence that understands reality.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-8 border border-[#10B981]/30 bg-black/60 backdrop-blur-sm">
+            <h3 className="text-lg font-bold text-white uppercase tracking-widest">Quantum Coherence</h3>
+          </div>
+          <div className="p-8 border border-[#10B981]/30 bg-black/60 backdrop-blur-sm">
+            <h3 className="text-lg font-bold text-white uppercase tracking-widest">Spacetime Modeling</h3>
+          </div>
+          <div className="p-8 border border-[#10B981]/30 bg-black/60 backdrop-blur-sm">
+            <h3 className="text-lg font-bold text-white uppercase tracking-widest">Neural Physics Mesh</h3>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ─── Page ───────────────────────────────────────────────────────── */
 export default function Home() {
+  const [singularityMode, setSingularityMode] = useState(false);
+
   return (
-    <main className="bg-background min-h-screen text-foreground font-sans selection:bg-primary/30 selection:text-white">
+    <main className="bg-background min-h-screen text-foreground font-sans selection:bg-primary/30 selection:text-white relative">
       <Navbar />
       <Hero />
       <Story />
@@ -591,7 +1096,53 @@ export default function Home() {
       <SocialProof />
       <TheNexus />
       <Horizon />
+      
+      {/* NEW SECTIONS */}
+      <GravityControl singularityMode={singularityMode} />
+      
+      <div className="w-full h-[2px] bg-gradient-to-r from-[#0EA5E9] to-[#7C3AED] relative flex justify-center items-center z-30">
+        <Hexagon className="absolute text-[#7C3AED] w-8 h-8 bg-[#020810] rounded-full p-1 border border-[#0EA5E9]/30" />
+      </div>
+      
+      <GravityAircraft singularityMode={singularityMode} />
+      
+      <div className="w-full h-[2px] bg-gradient-to-r from-[#7C3AED] to-[#06B6D4] relative flex justify-center items-center z-30">
+        <Plane className="absolute text-[#06B6D4] w-8 h-8 bg-[#03010A] rounded-full p-1 border border-[#7C3AED]/30" />
+      </div>
+
+      <HoverMobility singularityMode={singularityMode} />
+      
+      <div className="w-full h-[2px] bg-gradient-to-r from-[#06B6D4] to-[#F59E0B] relative flex justify-center items-center z-30">
+        <Wind className="absolute text-[#F59E0B] w-8 h-8 bg-[#010D10] rounded-full p-1 border border-[#06B6D4]/30" />
+      </div>
+
+      <SolarAmplifier singularityMode={singularityMode} />
+      
+      <div className="w-full h-[2px] bg-gradient-to-r from-[#F59E0B] to-[#9333EA] relative flex justify-center items-center z-30">
+        <Sun className="absolute text-[#9333EA] w-8 h-8 bg-[#08060A] rounded-full p-1 border border-[#F59E0B]/30" />
+      </div>
+
+      <CosmicRayCondenser singularityMode={singularityMode} />
+      
+      <div className="w-full h-[2px] bg-gradient-to-r from-[#9333EA] to-[#10B981] relative flex justify-center items-center z-30">
+        <Sparkles className="absolute text-[#10B981] w-8 h-8 bg-[#000005] rounded-full p-1 border border-[#9333EA]/30" />
+      </div>
+
+      <QuantumAI singularityMode={singularityMode} />
+
       <Footer />
+
+      {/* SINGULARITY TOGGLE */}
+      <button
+        onClick={() => setSingularityMode(s => !s)}
+        className={`fixed bottom-8 right-8 z-50 w-16 h-16 rounded-full flex items-center justify-center border transition-all duration-300 ${
+          singularityMode 
+            ? 'bg-red-950/80 border-red-500 shadow-[0_0_30px_rgba(220,38,38,0.6)]' 
+            : 'bg-black/60 border-white/20 hover:border-white/50 backdrop-blur-md'
+        }`}
+      >
+        <InfinityIcon className={`w-8 h-8 transition-colors duration-300 ${singularityMode ? 'text-red-500 animate-pulse' : 'text-white'}`} />
+      </button>
     </main>
   );
 }
