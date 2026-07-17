@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import { Hexagon, Plane, Wind, Sun, Sparkles, Brain, Infinity as InfinityIcon } from "lucide-react";
 import phantomLogo from "@/assets/images/phantom-logo-transparent.png";
 import phantomText from "@/assets/images/phantom-text-transparent.png";
@@ -8,25 +8,254 @@ import darkMatter from "@/assets/images/dark-matter-machinery.png";
 import eventHorizon from "@/assets/images/event-horizon.png";
 import cosmicGears from "@/assets/images/cosmic-gears.png";
 
-function AnimatedLogo({ sizeClass = "w-72 h-72 md:w-[420px] md:h-[420px]" }: { sizeClass?: string }) {
-  return (
-    <div className={`relative ${sizeClass}`} style={{ isolation: "isolate" }}>
-      <div className="absolute inset-0 rounded-full blur-[100px] bg-yellow-600/20 animate-pulse-slow pointer-events-none" />
-      <div className="absolute inset-0 rounded-full blur-[40px] bg-purple-700/10 animate-pulse-slow pointer-events-none" />
+/* ─── Logo particle field ────────────────────────────────────────── */
+type LogoParticle = {
+  id: number;
+  angle: number;
+  radius: number;
+  size: number;
+  dur: number;
+  delay: number;
+  depth: number; // 0 = far/behind, 1 = near/in front
+  hue: "gold" | "purple" | "blue";
+};
 
-      {/* Single layer: full logo rotates slowly — gear + black hole orbit */}
+function makeParticles(count: number): LogoParticle[] {
+  return Array.from({ length: count }, (_, i) => {
+    const hues: LogoParticle["hue"][] = ["gold", "purple", "blue"];
+    return {
+      id: i,
+      angle: Math.random() * 360,
+      radius: 130 + Math.random() * 110,
+      size: Math.random() * 2.5 + 1,
+      dur: Math.random() * 8 + 7,
+      delay: Math.random() * 6,
+      depth: Math.random(),
+      hue: hues[Math.floor(Math.random() * hues.length)],
+    };
+  });
+}
+
+const PARTICLE_COLORS: Record<LogoParticle["hue"], string> = {
+  gold: "201,168,76",
+  purple: "168,85,247",
+  blue: "96,165,250",
+};
+
+function LogoParticleDot({ p, active }: { p: LogoParticle; active: boolean }) {
+  const rgb = PARTICLE_COLORS[p.hue];
+  const speedMul = active ? 0.65 : 1;
+  const isBack = p.depth < 0.5;
+  return (
+    <div
+      className="absolute left-1/2 top-1/2 pointer-events-none"
+      style={{
+        width: 0,
+        height: 0,
+        transform: `rotate(${p.angle}deg)`,
+        animation: `particle-orbit ${p.dur * speedMul}s linear infinite`,
+        animationDelay: `${-p.delay}s`,
+        // @ts-ignore css custom property
+        "--orbit-radius": `${p.radius}px`,
+      }}
+    >
+      <div
+        className="rounded-full"
+        style={{
+          width: p.size,
+          height: p.size,
+          background: `rgba(${rgb},0.95)`,
+          boxShadow: `0 0 ${p.size * 3}px rgba(${rgb},0.8)`,
+          filter: isBack ? "blur(1.2px)" : "none",
+          opacity: isBack ? 0.55 : 1,
+          animation: `particle-pulse ${p.dur * 0.6}s ease-in-out infinite`,
+          animationDelay: `${-p.delay * 0.5}s`,
+        }}
+      />
+    </div>
+  );
+}
+
+/* ─── Animated 3D logo ───────────────────────────────────────────── */
+function AnimatedLogo({ sizeClass = "w-72 h-72 md:w-[420px] md:h-[420px]" }: { sizeClass?: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [hovered, setHovered] = useState(false);
+  const particles = useMemo(() => makeParticles(20), []);
+
+  // Mouse-driven tilt, smoothed with spring physics
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const springCfg = { damping: 22, stiffness: 90, mass: 1.4 };
+  const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [8, -8]), springCfg);
+  const rotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-8, 8]), springCfg);
+  // Center reacts slightly more than the shell — deeper parallax
+  const centerRotateX = useSpring(useTransform(my, [-0.5, 0.5], [12, -12]), springCfg);
+  const centerRotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-12, 12]), springCfg);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    mx.set((e.clientX - rect.left) / rect.width - 0.5);
+    my.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
+  const handleLeave = () => {
+    mx.set(0);
+    my.set(0);
+    setHovered(false);
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      className={`relative ${sizeClass}`}
+      style={{ isolation: "isolate", perspective: "1400px" }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={handleLeave}
+    >
+      {/* Ambient glow — gold / purple / blue, soft and slow */}
+      <div className="absolute inset-0 rounded-full blur-[100px] bg-yellow-600/20 animate-pulse-slow pointer-events-none" />
+      <div className="absolute inset-0 rounded-full blur-[60px] bg-purple-700/15 animate-pulse-slow pointer-events-none" />
+      <div
+        className="absolute inset-0 rounded-full blur-[90px] bg-blue-500/10 pointer-events-none"
+        style={{ animation: "pulse-ring 7s ease-in-out infinite" }}
+      />
+      {/* Subtle gravitational-lensing ring around the black hole */}
+      <div
+        className="absolute inset-[18%] rounded-full pointer-events-none opacity-40"
+        style={{
+          background:
+            "conic-gradient(from 0deg, transparent 0%, rgba(201,168,76,0.25) 20%, transparent 40%, rgba(168,85,247,0.2) 65%, transparent 85%)",
+          filter: "blur(18px)",
+          animation: "lens-warp 9s ease-in-out infinite",
+        }}
+      />
+
+      {/* Back particle layer — behind the logo, softly blurred (depth of field) */}
+      <div className="absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
+        {particles.filter((p) => p.depth < 0.5).map((p) => (
+          <LogoParticleDot key={p.id} p={p} active={hovered} />
+        ))}
+      </div>
+
+      {/* Floating + mouse-tilt shell */}
       <motion.div
         className="absolute inset-0"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
+        style={{ transformStyle: "preserve-3d", rotateX, rotateY }}
+        animate={{ y: [0, -8, 0, 6, 0], x: [0, 4, 0, -3, 0] }}
+        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
       >
-        <img
-          src={phantomLogo}
-          alt="PHANTOM Logo"
-          className="w-full h-full object-contain select-none"
-          draggable={false}
+        {/* Recessed shadow disc — gives the center a "sunken" feel */}
+        <div
+          className="absolute inset-[10%] rounded-full pointer-events-none"
+          style={{
+            transform: "translateZ(-40px)",
+            background: "radial-gradient(circle, rgba(0,0,0,0.65), transparent 72%)",
+            filter: "blur(16px)",
+          }}
+        />
+        {/* Ring shadow — the metallic ring casting depth onto the disc */}
+        <div
+          className="absolute inset-[16%] rounded-full pointer-events-none"
+          style={{
+            transform: "translateZ(-12px)",
+            boxShadow: "inset 0 8px 24px rgba(0,0,0,0.5), inset 0 -4px 16px rgba(0,0,0,0.4)",
+          }}
+        />
+
+        {/* Main rotating logo body — slow, eased, never-stopping */}
+        <motion.div
+          className="absolute inset-0"
+          style={{ transformStyle: "preserve-3d" }}
+          animate={{ rotate: 360 }}
+          transition={{
+            duration: hovered ? 22 : 34,
+            repeat: Infinity,
+            ease: [0.45, 0, 0.55, 1],
+          }}
+        >
+          <motion.div
+            className="relative w-full h-full"
+            animate={{ scale: hovered ? 1.02 : 1 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            style={{ transformStyle: "preserve-3d" }}
+          >
+            <img
+              src={phantomLogo}
+              alt="PHANTOM Logo"
+              className="w-full h-full object-contain select-none"
+              draggable={false}
+              style={{
+                transform: "translateZ(24px)",
+                filter: hovered
+                  ? "drop-shadow(0 28px 46px rgba(201,168,76,0.4)) drop-shadow(0 0 34px rgba(168,85,247,0.35)) brightness(1.08) saturate(1.08)"
+                  : "drop-shadow(0 16px 30px rgba(0,0,0,0.55)) drop-shadow(0 0 18px rgba(201,168,76,0.18))",
+                transition: "filter 0.7s ease",
+              }}
+            />
+
+            {/* Dynamic specular sweep — masked to the logo's own silhouette so
+                the "highlight" only ever lands on metal, simulating a moving light source */}
+            <motion.div
+              className="absolute inset-0 pointer-events-none mix-blend-overlay"
+              style={{
+                z: 26,
+                background:
+                  "conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.55) 6%, transparent 14%, transparent 50%, rgba(255,255,255,0.25) 56%, transparent 64%, transparent 100%)",
+                WebkitMaskImage: `url(${phantomLogo})`,
+                WebkitMaskSize: "contain",
+                WebkitMaskRepeat: "no-repeat",
+                WebkitMaskPosition: "center",
+                maskImage: `url(${phantomLogo})`,
+                maskSize: "contain",
+                maskRepeat: "no-repeat",
+                maskPosition: "center",
+              }}
+              animate={{ rotate: -360 }}
+              transition={{ duration: hovered ? 6 : 10, repeat: Infinity, ease: "linear" }}
+            />
+
+            {/* Black-hole glow breathing through the same mask, for "alive" energy */}
+            <motion.div
+              className="absolute inset-0 pointer-events-none mix-blend-screen"
+              style={{
+                transform: "translateZ(10px)",
+                background: "radial-gradient(circle at 50% 50%, rgba(234,179,8,0.35), transparent 42%)",
+                WebkitMaskImage: `url(${phantomLogo})`,
+                WebkitMaskSize: "contain",
+                WebkitMaskRepeat: "no-repeat",
+                WebkitMaskPosition: "center",
+                maskImage: `url(${phantomLogo})`,
+                maskSize: "contain",
+                maskRepeat: "no-repeat",
+                maskPosition: "center",
+              }}
+              animate={{ opacity: hovered ? [0.5, 1, 0.5] : [0.3, 0.6, 0.3] }}
+              transition={{ duration: hovered ? 2 : 3.5, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </motion.div>
+        </motion.div>
+
+        {/* Center parallax accent — reacts more than the shell to the cursor,
+            reinforcing the "recessed center" depth cue */}
+        <motion.div
+          className="absolute inset-[30%] rounded-full pointer-events-none"
+          style={{
+            transformStyle: "preserve-3d",
+            rotateX: centerRotateX,
+            rotateY: centerRotateY,
+            z: 4,
+            background: "radial-gradient(circle, rgba(147,51,234,0.12), transparent 70%)",
+          }}
         />
       </motion.div>
+
+      {/* Front particle layer — in front of the logo, sharp */}
+      <div className="absolute inset-0 pointer-events-none" style={{ transformStyle: "preserve-3d" }}>
+        {particles.filter((p) => p.depth >= 0.5).map((p) => (
+          <LogoParticleDot key={p.id} p={p} active={hovered} />
+        ))}
+      </div>
     </div>
   );
 }
