@@ -311,11 +311,63 @@ function Navbar() {
   );
 }
 
+/* ─── Hero background video ──────────────────────────────────────── */
+function HeroBackgroundVideo() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [reduceMotion, setReduceMotion] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduceMotion(mq.matches);
+    const onChange = (e: MediaQueryListEvent) => setReduceMotion(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  useEffect(() => {
+    // Some browsers ignore the autoplay attribute until the element is mounted
+    videoRef.current?.play().catch(() => {});
+  }, [reduceMotion]);
+  const base = import.meta.env.BASE_URL;
+  return (
+    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
+      {reduceMotion ? (
+        <img
+          src={`${base}videos/space-background-poster.jpg`}
+          alt=""
+          className="w-full h-full object-cover opacity-50"
+        />
+      ) : (
+        <video
+          ref={videoRef}
+          className="w-full h-full object-cover opacity-60"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          poster={`${base}videos/space-background-poster.jpg`}
+        >
+          <source src={`${base}videos/space-background.webm`} type="video/webm" />
+          <source src={`${base}videos/space-background.mp4`} type="video/mp4" />
+        </video>
+      )}
+      {/* Vignette + bottom fade keep the text readable and blend into the next section */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(5,3,10,0.15) 0%, rgba(5,3,10,0.75) 100%)",
+        }}
+      />
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
+    </div>
+  );
+}
 /* ─── Hero ───────────────────────────────────────────────────────── */
 function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 bg-background z-0" />
+      <HeroBackgroundVideo />
       <div className="absolute inset-0 z-0" style={{
         background: "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(80,30,120,0.22) 0%, transparent 70%)",
       }} />
