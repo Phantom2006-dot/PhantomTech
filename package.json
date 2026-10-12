@@ -5,7 +5,7 @@
   "scripts": {
     "preinstall": "echo 'Installing dependencies...'",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
-    "vercel-build": "pnpm --filter @workspace/phantom run build",
+    "vercel-build": "pnpm --filter @workspace/api-server run build:vercel && pnpm --filter @workspace/phantom run build",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
   },
