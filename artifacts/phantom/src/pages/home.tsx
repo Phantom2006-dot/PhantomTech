@@ -503,9 +503,15 @@ function Story() {
           className="relative"
         >
           <div className="absolute -inset-4 bg-secondary/15 blur-[60px] rounded-full" />
-          <img
-            src={quantumCore}
-            alt="Quantum Core"
+          <video
+            src={`${import.meta.env.BASE_URL}videos/quantum-core.mp4`}
+            poster={quantumCore}
+            aria-label="Quantum Core"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
             className="w-full rounded-xl border border-white/8 relative z-10 shadow-2xl shadow-purple-900/20"
           />
           <div className="absolute bottom-4 left-4 z-20 bg-black/60 backdrop-blur-sm px-4 py-2 border border-white/10">
@@ -607,9 +613,15 @@ function CoreMachinery() {
           className="relative order-1 lg:order-2"
         >
           <div className="absolute -inset-4 bg-primary/10 blur-[60px] rounded-full" />
-          <img
-            src={darkMatter}
-            alt="Dark Matter Machinery"
+          <video
+            src={`${import.meta.env.BASE_URL}videos/alloy-class.mp4`}
+            poster={darkMatter}
+            aria-label="Dark Matter Machinery"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
             className="w-full rounded-xl border border-white/8 relative z-10 shadow-2xl shadow-yellow-900/10"
           />
           <div className="absolute bottom-4 right-4 z-20 bg-black/60 backdrop-blur-sm px-4 py-2 border border-white/10">
@@ -845,11 +857,17 @@ function Horizon() {
   return (
     <section className="relative h-screen overflow-hidden flex items-center justify-center border-t border-white/5">
       <motion.div style={{ y }} className="absolute inset-0 w-full h-full">
-        <img
-          src={eventHorizon}
-          alt="Event Horizon"
-          className="w-full h-[130%] object-cover opacity-55 mix-blend-luminosity"
-        />
+        <video
+            src={`${import.meta.env.BASE_URL}videos/event-horizon.mp4`}
+            poster={eventHorizon}
+            aria-label="Event Horizon"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            className="w-full h-[130%] object-cover opacity-55 mix-blend-luminosity"
+          />
       </motion.div>
       <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background z-10" />
       <div className="absolute inset-0 bg-gradient-to-r from-background/50 via-transparent to-background/50 z-10" />
