@@ -1,5 +1,8 @@
 {
   "buildCommand": "pnpm vercel-build",
   "outputDirectory": "artifacts/phantom/dist",
-  "installCommand": "pnpm install"
+  "installCommand": "pnpm install",
+  "rewrites": [
+    { "source": "/((?!api/|assets/|videos/|brand/|favicon|opengraph).*)", "destination": "/index.html" }
+  ]
 }
