@@ -362,6 +362,55 @@ function HeroBackgroundVideo() {
     </div>
   );
 }
+/* ─── Hero logo: looping clock-hand video ────────────────────────── */
+function HeroLogoVideo({ sizeClass = "w-72 h-72 md:w-[520px] md:h-[520px]" }: { sizeClass?: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [reduceMotion, setReduceMotion] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduceMotion(mq.matches);
+    const onChange = (e: MediaQueryListEvent) => setReduceMotion(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  useEffect(() => {
+    videoRef.current?.play().catch(() => {});
+  }, [reduceMotion]);
+  const base = import.meta.env.BASE_URL;
+  const poster = `${base}videos/clock-hand-loop-poster.jpg`;
+  // The clip has a near-black background: "screen" blending + a soft radial mask
+  // makes it melt into the hero instead of showing a rectangle.
+  const blend: React.CSSProperties = {
+    mixBlendMode: "screen",
+    WebkitMaskImage: "radial-gradient(circle closest-side at 50% 50%, #000 55%, transparent 98%)",
+    maskImage: "radial-gradient(circle closest-side at 50% 50%, #000 55%, transparent 98%)",
+  };
+  return (
+    <div className={`relative ${sizeClass} flex items-center justify-center`} role="img" aria-label="PHANTOM emblem with a clock hand sweeping around a black hole">
+      <div
+        className="absolute inset-[10%] rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(168,85,247,0.22) 0%, rgba(201,168,76,0.10) 45%, transparent 70%)", filter: "blur(30px)" }}
+      />
+      {reduceMotion ? (
+        <img src={poster} alt="" className="relative w-full h-full object-cover" style={blend} draggable={false} />
+      ) : (
+        <video
+          ref={videoRef}
+          className="relative w-full h-full object-cover"
+          style={blend}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          poster={poster}
+        >
+          <source src={`${base}videos/clock-hand-loop.mp4`} type="video/mp4" />
+        </video>
+      )}
+    </div>
+  );
+}
 /* ─── Hero ───────────────────────────────────────────────────────── */
 function Hero() {
   return (
@@ -381,7 +430,7 @@ function Hero() {
           transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
           className="relative mb-14"
         >
-          <AnimatedLogo />
+          <HeroLogoVideo />
         </motion.div>
 
         <motion.div
