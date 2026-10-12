@@ -2,7 +2,20 @@
   "buildCommand": "pnpm vercel-build",
   "outputDirectory": "artifacts/phantom/dist",
   "installCommand": "pnpm install",
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 60,
+      "includeFiles": "artifacts/api-server/vercel-dist/**"
+    }
+  },
   "rewrites": [
-    { "source": "/((?!api/|assets/|videos/|brand/|favicon|opengraph).*)", "destination": "/index.html" }
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/((?!api/|assets/|videos/|brand/|favicon|opengraph).*)",
+      "destination": "/index.html"
+    }
   ]
 }
